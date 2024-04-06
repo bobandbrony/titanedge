@@ -11,6 +11,7 @@ curl -fsSL https://get.docker.com -o get-docker.sh
 ```
 
 这条命令会从 Docker 的官方网站下载一个名为 `get-docker.sh` 的安装脚本到你的当前目录。
+
 2. 执行下载的脚本来安装 Docker：
 
 ```
@@ -18,6 +19,7 @@ sudo sh get-docker.sh
 ```
 
 这条命令会以管理员权限运行脚本，脚本会自动完成 Docker 的安装和配置过程。
+
 3. （可选，这一步可以忽略）如果你想在不使用 `sudo` 的情况下运行 Docker 命令，可以将你的用户添加到 `docker` 组中：
 
 ```
@@ -25,6 +27,7 @@ sudo usermod -aG docker ${USER}
 ```
 
 完成这步操作后，你可能需要注销并重新登录，或者重启你的系统来使改动生效。
+
 4. 安装完成后，你可以运行以下命令来验证 Docker 是否安装成功并正在运行：
 
 ```
