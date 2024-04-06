@@ -32,10 +32,22 @@ do
     container_name="titanedge_$new_id"
     echo "启动容器 $container_name..."
     CONTAINER_ID=$(docker run -d --name $container_name -v "$project_path:/root/.titanedge" nezha123/titan-edge)
-    # 确保容器完全启动
     sleep 10
     echo "正在尝试绑定身份码..."
-    docker exec -it $CONTAINER_ID /bin/bash -c "titan-edge bind --hash=$user_hash https://api-test1.container1.titannet.io/api/v2/device/binding"
+    success=false
+    attempts=0
+    max_attempts=5
+    while [ $attempts -lt $max_attempts ]; do
+        docker exec -it $CONTAINER_ID /bin/bash -c "titan-edge bind --hash=$user_hash https://api-test1.container1.titannet.io/api/v2/device/binding" && success=true && break
+        attempts=$((attempts+1))
+        echo "绑定失败，正在进行第 $attempts 次重试..."
+        sleep 5
+    done
+    if [ $success = true ]; then
+        echo "身份码成功绑定到titanedge$new_id."
+    else
+        echo "身份码绑定失败，请手动检查titanedge$new_id."
+    fi
 done
 
 echo "所有指定的titanedge项目已成功处理。"
