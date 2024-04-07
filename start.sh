@@ -1,28 +1,14 @@
 #!/bin/bash
 
 image_name="nezha123/titan-edge"  # 镜像名称
+container_prefix="titan-edge-container"  # 容器名前缀
+num_containers=5  # 需要启动的容器数量
 
-# 检查家目录下所有的.titanedge相关目录，包括特殊情况的/.titanedge
-for dir in $(ls $HOME | grep '\.titanedge'); do
-    # 特殊情况处理：如果目录名称为.titanedge，则将容器名称设置为titanedge_0
-    if [ "$dir" == ".titanedge" ]; then
-        container_name="titanedge_0"
-    else
-        # 提取数字部分
-        dir_number=$(echo $dir | grep -o '[0-9]*')
-        # 构造容器名称
-        container_name="titanedge_$dir_number"
-    fi
+for i in $(seq 1 $num_containers); do
+    container_name="${container_prefix}-${i}"  # 定义容器名
+    volume_path="$HOME/.titanedge$i:/root/.titanedge"  # 定义卷挂载路径，替换#为数字
 
-    # 检查是否有对应的容器正在运行
-    running_container=$(docker ps --filter "name=^/${container_name}$" --format "{{.Names}}")
+    echo "启动容器: $container_name，卷挂载: $volume_path"
 
-    if [ -z "$running_container" ]; then
-        # 容器不存在或未运行
-        volume_path="$HOME/$dir:/root/.titanedge"  # 定义卷挂载路径
-        echo "启动容器: $container_name，卷挂载: $volume_path"
-        docker run -d --name $container_name -v $volume_path $image_name
-    else
-        echo "容器 $container_name 已经在运行."
-    fi
+    docker run -d --name $container_name -v $volume_path $image_name
 done
