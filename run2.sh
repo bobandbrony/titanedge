@@ -32,11 +32,15 @@ do
     echo "正在处理titanedge$new_id..."
     echo "创建目录 $project_path..."
     mkdir -p "$project_path"
-    echo "准备config.toml文件..."
-    echo "StorageGB = $storage_gb" > "$project_path/config.toml"
     container_name="titanedge_$new_id"
     echo "启动容器 $container_name..."
     CONTAINER_ID=$(docker run -d --name $container_name -v "$project_path:/root/.titanedge" nezha123/titan-edge)
+    sleep 10 # 等待容器初始化并生成默认的config.toml文件
+    echo "修改config.toml文件..."
+    docker exec -it $CONTAINER_ID /bin/bash -c "sed -i '/StorageGB/c\  StorageGB = $storage_gb' /root/.titanedge/config.toml"
+    echo "重启容器以应用配置更改..."
+    docker restart $CONTAINER_ID
+    sleep 5 # 给容器一些时间来完成重启
     echo "正在尝试绑定身份码..."
     success=false
     attempts=0
