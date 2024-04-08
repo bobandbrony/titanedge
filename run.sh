@@ -4,10 +4,10 @@
 read -p "请输入你想要创建的titanedge项目数量（n）: " n
 
 # 询问用户输入hash值
-read -p "请输入hash值: " user_hash
+read -p "请输入你的身份码（只需要输入一个）: " user_hash
 
 # 询问用户设置的StorageGB大小
-read -p "请输入你想为每个项目设置的StorageGB大小: " storage_gb
+read -p "请输入你想为每个项目设置的StorageGB大小（如果不知道怎么填，请输入2）: " storage_gb
 
 # 检查并拉取最新的nezha123/titan-edge镜像
 echo "正在检查并拉取最新的nezha123/titan-edge镜像..."
