@@ -3,9 +3,19 @@
 # 询问用户想要创建的titanedge项目数量
 read -p "请输入你想要创建的titanedge项目数量（n）: " n
 
-# 询问用户输入hash值
-read -p "请输入hash值: " user_hash
-
+# 循环直到用户输入有效的hash值
+valid_hash=0
+while [ $valid_hash -eq 0 ]; do
+    read -p "请输入hash值: " user_hash
+    # 使用POST请求验证hash，并返回状态码200表示有效
+    response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "{\"hash\":\"$user_hash\"}" "https://api-test1.container1.titannet.io/api/v2/device/binding")
+    if [ "$response" = "200" ]; then
+        echo "哈希值验证成功。"
+        valid_hash=1
+    else
+        echo "哈希值无效，请重新输入。"
+    fi
+done
 # 询问用户设置的StorageGB大小
 read -p "请输入你想为每个项目设置的StorageGB大小: " storage_gb
 

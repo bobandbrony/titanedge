@@ -4,10 +4,10 @@
 read -p "请输入你想要创建的titanedge项目数量（n）: " n
 
 # 询问用户输入hash值
-read -p "请输入hash值: " user_hash
+read -p "请输入你的身份码（只需要输入一个）: " user_hash
 
 # 询问用户设置的StorageGB大小
-read -p "请输入你想为每个项目设置的StorageGB大小: " storage_gb
+read -p "请输入你想为每个项目设置的StorageGB大小（如果不知道怎么填，请输入2）: " storage_gb
 
 # 检查并拉取最新的nezha123/titan-edge镜像
 echo "正在检查并拉取最新的nezha123/titan-edge镜像..."
@@ -35,11 +35,12 @@ do
     container_name="titanedge_$new_id"
     echo "启动容器 $container_name..."
     CONTAINER_ID=$(docker run -d --name $container_name -v "$project_path:/root/.titanedge" nezha123/titan-edge)
-    sleep 10
-    echo "等待config.toml文件生成..."
-    sleep 5 # 等待config.toml文件被创建
-    echo "正在修改StorageGB设置..."
-    sed -i "/StorageGB/c\  StorageGB = $storage_gb" "$project_path/config.toml"
+    sleep 10 # 等待容器初始化并生成默认的config.toml文件
+    echo "修改config.toml文件..."
+    docker exec -it $CONTAINER_ID /bin/bash -c "sed -i '/StorageGB/c\  StorageGB = $storage_gb' /root/.titanedge/config.toml"
+    echo "重启容器以应用配置更改..."
+    docker restart $CONTAINER_ID
+    sleep 5 # 给容器一些时间来完成重启
     echo "正在尝试绑定身份码..."
     success=false
     attempts=0
